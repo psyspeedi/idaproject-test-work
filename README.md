@@ -1,6 +1,8 @@
-# test-idaproject
-
-## Project setup
+# This project site
+```
+https://idaproject-test-work.web.app/
+```
+## Project local setup
 ```
 npm install
 ```
@@ -10,15 +12,9 @@ npm install
 npm run serve
 ```
 
-### Compiles and minifies for production
+### Open browser
 ```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
+http://localhost:8080/
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+
