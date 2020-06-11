@@ -10,7 +10,7 @@
   <div v-else-if="error" class="error">
     <p style="font-size: 2.5rem">Something went wrong :(</p>
     <br />
-    <p @click="reload" style="color: #2196f3;font-size: 2rem; cursor: pointer">Try it again!</p>
+    <p @click="init" style="color: #2196f3;font-size: 2rem; cursor: pointer">Try it again!</p>
   </div>
 </template>
 
@@ -33,40 +33,42 @@
       ...mapGetters(['perPage', 'defaultPage', 'firstItemTable', 'sortProducts'])
     },
     methods: {
-      reload() {
-        window.location.reload()
+      async init() {
+        this.isReady = false
+        this.error = false
+        try {
+          await this.$store.dispatch('fetchProduct')
+          this.$store.commit('sortProducts', this.firstItemTable)
+          this.$store.commit('setFilteredProductsPerPage', this.sortProducts)
+
+          if (this.$route.query.page && this.$route.query.perPage) {
+            this.$store.commit('setPerPage', this.$route.query.perPage)
+            this.$store.commit('togglePerPageCount', this.perPage)
+            this.$store.commit('setFilteredProductsPerPage', this.sortProducts)
+            this.$router.push({
+              name: 'Table',
+              query: {
+                perPage: String(this.$route.query.perPage),
+                page: String(this.$route.query.page)
+              }
+            })
+          } else {
+            this.$router.push({
+              name: 'Table',
+              query: { perPage: String(this.perPage), page: String(this.defaultPage) }
+            })
+          }
+
+          this.isReady = true
+        } catch (e) {
+          this.$message(e.error)
+          this.isReady = true
+          this.error = true
+        }
       }
     },
     async mounted() {
-      try {
-        await this.$store.dispatch('fetchProduct')
-        this.$store.commit('sortProducts', this.firstItemTable)
-        this.$store.commit('setFilteredProductsPerPage', this.sortProducts)
-
-        if (this.$route.query.page && this.$route.query.perPage) {
-          this.$store.commit('setPerPage', this.$route.query.perPage)
-          this.$store.commit('togglePerPageCount', this.perPage)
-          this.$store.commit('setFilteredProductsPerPage', this.sortProducts)
-          this.$router.push({
-            name: 'Table',
-            query: {
-              perPage: String(this.$route.query.perPage),
-              page: String(this.$route.query.page)
-            }
-          })
-        } else {
-          this.$router.push({
-            name: 'Table',
-            query: { perPage: String(this.perPage), page: String(this.defaultPage) }
-          })
-        }
-
-        this.isReady = true
-      } catch (e) {
-        this.$message(e.error)
-        this.isReady = true
-        this.error = true
-      }
+      await this.init()
     }
   }
 </script>
