@@ -190,13 +190,12 @@ export default new Vuex.Store({
           i = 'iron'
           break
       }
-      const copyProducts = [...state.products]
 
       if (state.reverseSort) {
-        return (state.sortProducts = copyProducts.sort((a, b) => (a[i] < b[i] ? 1 : -1)))
+        return (state.sortProducts = state.products.sort((a, b) => (a[i] < b[i] ? 1 : -1)))
       }
 
-      state.sortProducts = copyProducts.sort((a, b) => (a[i] > b[i] ? 1 : -1))
+      state.sortProducts = state.products.sort((a, b) => (a[i] > b[i] ? 1 : -1))
     },
     deleteProducts(state, payload) {
       for (let i = 0; i < payload.length; i++) {
